@@ -1,0 +1,13 @@
+package pos.spring.interactivecolourpickerandvisualizationprojectbackend;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class InteractiveColourPickerAndVisualizationProjectBackendApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
