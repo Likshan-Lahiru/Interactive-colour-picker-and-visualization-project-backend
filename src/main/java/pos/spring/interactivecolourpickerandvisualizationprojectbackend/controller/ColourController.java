@@ -57,7 +57,7 @@ public class ColourController {
     }
 
     @GetMapping(value = "/{colourCode}")
-    public Status getCropById(@PathVariable("colourCode") String colourCode){
+    public Status getColourById(@PathVariable("colourCode") String colourCode){
         System.out.println("get Colour id"+ colourCode);
         return colourService.getColourById(colourCode);
     }
@@ -74,7 +74,7 @@ public class ColourController {
     }
 
     @DeleteMapping(value = "/{ColourCode}")
-    public ResponseEntity<Object> deleteCrop(@PathVariable("ColourCode") String colourCode){
+    public ResponseEntity<Object> deleteColour(@PathVariable("ColourCode") String colourCode){
         try {
             colourService.deleteColour(colourCode);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

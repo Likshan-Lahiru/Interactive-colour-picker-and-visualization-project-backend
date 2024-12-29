@@ -6,6 +6,7 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.stat
 import java.util.List;
 
 public interface UserService {
+    void signUp(UserDto userDto);
     List<UserDto> getUserList();
     Status getUserById(String userId);
     void updateUser(String userId, UserDto userDto);

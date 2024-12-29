@@ -57,7 +57,7 @@ public class ColourServiceImpl implements ColourService {
             ColourEntity colourEntity = colourDao.getReferenceById(colourId);
             return mapping.toColourDto(colourEntity);
         }else {
-            return new SelectedErrorStatus(2,"Crop not found");
+            return new SelectedErrorStatus(2,"Colour not found");
         }
     }
     public List<ColourDto> getAllColoursByUserId(String userId) {
