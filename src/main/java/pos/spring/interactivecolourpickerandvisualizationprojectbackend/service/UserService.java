@@ -12,4 +12,5 @@ public interface UserService {
     void updateUser(String userId, UserDto userDto);
     void deleteUser(String userId);
     String generateUserID();
+    boolean signIn(String email, String password);
 }

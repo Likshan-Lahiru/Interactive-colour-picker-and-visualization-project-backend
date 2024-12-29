@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.ColourDto;
+import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.SignInDto;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.UserDto;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.status.Status;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.DataPersistException;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveColour(
+    public ResponseEntity<Void> saveUser(
             @RequestPart("id") String id,
             @RequestPart("username") String username,
             @RequestPart("password") String password,
@@ -51,9 +52,22 @@ public class UserController {
         }
     }
 
+    @PostMapping(value = "/signIn", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> signIn(@RequestBody SignInDto signIn) {
+        System.out.println("Processing sign-in request...");
+        boolean isAuthenticated = userService.signIn(signIn.getEmail(), signIn.getPassword());
+
+        if (isAuthenticated) {
+            return ResponseEntity.ok("Sign-in successful!");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password!");
+        }
+    }
+
+
     @PutMapping(value = "/{userCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateColour(
+    public ResponseEntity<Void> updateUser(
             @PathVariable("userCode") String userCode,
             @RequestPart("id") String id,
             @RequestPart("username") String username,

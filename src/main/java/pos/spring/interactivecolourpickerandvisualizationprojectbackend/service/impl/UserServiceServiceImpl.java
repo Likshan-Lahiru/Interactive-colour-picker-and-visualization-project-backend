@@ -34,6 +34,11 @@ public class UserServiceServiceImpl implements UserService {
             throw new DataPersistException();
         }
     }
+    @Override
+    public boolean signIn(String email, String password) {
+        return userDao.existsByEmailAndPassword(email, password);
+    }
+
 
     @Override
     public List<UserDto> getUserList() {
