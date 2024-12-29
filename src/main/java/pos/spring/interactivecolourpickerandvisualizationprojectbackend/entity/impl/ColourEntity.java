@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.entity.SuperEntity;
 
-import java.util.List;
 
 
 @AllArgsConstructor
@@ -30,7 +29,8 @@ public class ColourEntity implements SuperEntity {
     private float fullCost;
     private String resolution;
     @ManyToOne
-    @JoinColumn(name = "userEntity")
-    private UserEntity userEntity; ;
+    @JoinColumn(name = "userEntity",nullable = false)
+    private UserEntity userEntity;
+
 
 }

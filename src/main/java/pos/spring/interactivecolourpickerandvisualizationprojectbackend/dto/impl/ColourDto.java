@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.status.Status;
 
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -23,5 +24,6 @@ public class ColourDto implements Status {
     private float K_cost;
     private float fullCost;
     private String resolution;
+    private String userEntity;
 
 }

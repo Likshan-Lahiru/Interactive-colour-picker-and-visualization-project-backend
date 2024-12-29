@@ -6,6 +6,7 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.stat
 import java.util.List;
 
 public interface ColourService  {
+    void save(ColourDto colourDto);
     List<ColourDto> getColourList();
     Status getColourById(String colourId);
     void updateColour(String colourId, ColourDto colourDto);
