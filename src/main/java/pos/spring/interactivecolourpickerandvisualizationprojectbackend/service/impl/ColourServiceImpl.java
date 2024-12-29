@@ -12,10 +12,12 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.stat
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.entity.impl.ColourEntity;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.entity.impl.UserEntity;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.DataPersistException;
+import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.ItemNotFoundException;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.service.ColourService;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.util.Mapping;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -70,7 +72,12 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     public void deleteColour(String colourId) {
-
+        Optional<ColourEntity> existedColour = colourDao.findById(colourId);
+        if(!existedColour.isPresent()){
+            throw new ItemNotFoundException("Colour with id " + colourId + " not found");
+        }else {
+            colourDao.deleteById(colourId);
+        }
     }
 
     @Override

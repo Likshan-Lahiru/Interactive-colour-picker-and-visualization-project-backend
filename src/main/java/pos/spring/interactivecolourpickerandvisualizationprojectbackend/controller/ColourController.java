@@ -10,6 +10,7 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.Cost;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.status.Status;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.DataPersistException;
+import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.ItemNotFoundException;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.service.ColourService;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.util.ImageConverter;
 
@@ -72,6 +73,19 @@ public class ColourController {
         }
     }
 
+    @DeleteMapping(value = "/{ColourCode}")
+    public ResponseEntity<Object> deleteCrop(@PathVariable("ColourCode") String colourCode){
+        try {
+            colourService.deleteColour(colourCode);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }catch (ItemNotFoundException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 
