@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pos.spring.interactivecolourpickerandvisualizationprojectbackend.custtomStatusCode.SelectedErrorStatus;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dao.ColourDao;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dao.UserDao;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.ColourDto;
@@ -45,12 +46,21 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     public List<ColourDto> getColourList() {
-        return List.of();
+        return mapping.asColourDtoList(colourDao.findAll());
     }
 
     @Override
     public Status getColourById(String colourId) {
-        return null;
+        if (colourDao.existsById(colourId)) {
+            ColourEntity colourEntity = colourDao.getReferenceById(colourId);
+            return mapping.toColourDto(colourEntity);
+        }else {
+            return new SelectedErrorStatus(2,"Crop not found");
+        }
+    }
+    public List<ColourDto> getAllColoursByUserId(String userId) {
+        List<ColourEntity> colourEntities = colourDao.findAllByUserId(userId);
+        return mapping.asColourDtoList(colourEntities);
     }
 
     @Override

@@ -9,6 +9,7 @@ public interface ColourService  {
     void save(ColourDto colourDto);
     List<ColourDto> getColourList();
     Status getColourById(String colourId);
+    List<ColourDto> getAllColoursByUserId(String userId);
     void updateColour(String colourId, ColourDto colourDto);
     void deleteColour(String colourId);
     String generateColourID();
