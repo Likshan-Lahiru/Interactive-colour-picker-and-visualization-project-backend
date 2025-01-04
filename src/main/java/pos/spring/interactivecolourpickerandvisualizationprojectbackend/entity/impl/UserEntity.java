@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.entity.SuperEntity;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -15,8 +16,10 @@ import java.util.List;
 @Entity
 @Table(name = "userTable")
 public class UserEntity implements SuperEntity {
+
     @Id
     private String id;
+
     private String username;
     private String password;
     private String firstName;
@@ -24,8 +27,20 @@ public class UserEntity implements SuperEntity {
     private String email;
     private String phoneNumber;
     private String companyName;
+
+    private Date created_at;
+
     @Column(columnDefinition = "LONGTEXT")
     private String userProfileImage;
+
     @OneToMany(mappedBy = "userEntity")
     private List<ColourEntity> colourEntities;
+
+    @PrePersist
+    public void prePersist() {
+
+        if (created_at == null) {
+            created_at = new Date();
+        }
+    }
 }

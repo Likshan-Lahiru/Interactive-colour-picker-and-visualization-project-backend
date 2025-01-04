@@ -1,5 +1,8 @@
 package pos.spring.interactivecolourpickerandvisualizationprojectbackend.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,7 +10,6 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.custtomS
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dao.UserDao;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.UserDto;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.status.Status;
-import pos.spring.interactivecolourpickerandvisualizationprojectbackend.entity.impl.ColourEntity;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.entity.impl.UserEntity;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.DataPersistException;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exception.ItemNotFoundException;
@@ -21,6 +23,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServiceServiceImpl implements UserService {
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private UserDao userDao;
@@ -35,9 +39,15 @@ public class UserServiceServiceImpl implements UserService {
         }
     }
     @Override
-    public boolean signIn(String email, String password) {
-        return userDao.existsByEmailAndPassword(email, password);
+    public String signIn(String email, String password) {
+        Optional<UserEntity> user = userDao.findByEmailAndPassword(email, password);
+        if (user.isPresent()) {
+            return user.get().getId(); // Assuming `getId()` is the method to get the user ID
+        } else {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
     }
+
 
 
     @Override
@@ -87,6 +97,21 @@ public class UserServiceServiceImpl implements UserService {
 
     @Override
     public String generateUserID() {
-        return "";
+        TypedQuery<String> query = entityManager.createQuery(
+                "SELECT c.id FROM UserEntity c ORDER BY c.id DESC", String.class);
+        query.setMaxResults(1);
+
+
+        String lastCropId = query.getResultStream().findFirst().orElse(null);
+
+        if (lastCropId != null) {
+
+            int generatedCropId = Integer.parseInt(lastCropId.replace("U00-", "")) + 1;
+            return String.format("U00-%03d", generatedCropId);
+        } else {
+
+            return "U00-001";
+        }
     }
+
 }

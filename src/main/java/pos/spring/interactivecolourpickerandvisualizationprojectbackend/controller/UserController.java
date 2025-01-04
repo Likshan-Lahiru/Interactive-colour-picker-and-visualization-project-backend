@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.ColourDto;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.SignInDto;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl.UserDto;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.status.Status;
@@ -51,18 +50,34 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping(value = "/signUpNoImage",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> signUpWithOutImage(@RequestBody UserDto userDto){
+
+
+        try {
+            userDto.setUserProfileImage(null);
+             userService.signUp(userDto);
+             return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (DataPersistException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping(value = "/signIn", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> signIn(@RequestBody SignInDto signIn) {
         System.out.println("Processing sign-in request...");
-        boolean isAuthenticated = userService.signIn(signIn.getEmail(), signIn.getPassword());
-
-        if (isAuthenticated) {
-            return ResponseEntity.ok("Sign-in successful!");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password!");
+        try {
+            String userId = userService.signIn(signIn.getEmail(), signIn.getPassword());
+            return ResponseEntity.ok(userId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+
 
 
     @PutMapping(value = "/{userCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -116,6 +131,10 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    @GetMapping("/genUserID")
+    public String generateUserId(){
+        return userService.generateUserID();
     }
 
 

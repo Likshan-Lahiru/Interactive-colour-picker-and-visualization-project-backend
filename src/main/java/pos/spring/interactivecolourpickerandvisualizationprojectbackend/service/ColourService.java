@@ -4,6 +4,7 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.impl
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.dto.status.Status;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ColourService  {
     void save(ColourDto colourDto);
@@ -13,6 +14,7 @@ public interface ColourService  {
     void updateColour(String colourId, ColourDto colourDto);
     void deleteColour(String colourId);
     String generateColourID();
+    Map<String, Object> getUserStatistics(String userId);
 
 
 }

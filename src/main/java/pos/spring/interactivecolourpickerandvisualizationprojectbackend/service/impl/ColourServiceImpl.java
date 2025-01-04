@@ -1,5 +1,8 @@
 package pos.spring.interactivecolourpickerandvisualizationprojectbackend.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +19,15 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.exceptio
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.service.ColourService;
 import pos.spring.interactivecolourpickerandvisualizationprojectbackend.util.Mapping;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
 @Transactional
 public class ColourServiceImpl implements ColourService {
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private ColourDao colourDao;
 
@@ -82,6 +87,43 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     public String generateColourID() {
-        return "";
+        TypedQuery<String> query = entityManager.createQuery(
+                "SELECT c.id FROM ColourEntity c ORDER BY c.id DESC", String.class);
+        query.setMaxResults(1);
+
+
+        String lastCropId = query.getResultStream().findFirst().orElse(null);
+
+        if (lastCropId != null) {
+
+            int generatedCropId = Integer.parseInt(lastCropId.replace("C00-", "")) + 1;
+            return String.format("C00-%03d", generatedCropId);
+        } else {
+
+            return "C00-001";
+        }
+    }
+
+    @Override
+    public Map<String, Object> getUserStatistics(String userId) {
+        Map<String, Object> statistics = new HashMap<>();
+
+
+        Double totalCost = colourDao.findTotalCostByUserId(userId);
+        statistics.put("totalCost", totalCost != null ? totalCost : 0.0);
+
+
+        Long totalImageCount = colourDao.findTotalImageCountByUserId(userId);
+        statistics.put("totalImageCount", totalImageCount != null ? totalImageCount : 0L);
+
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -7);
+        Date lastWeek = calendar.getTime();
+
+        Double weeklyAverage = colourDao.findWeeklyImageAverage(userId, lastWeek);
+        statistics.put("weeklyAverage", weeklyAverage != null ? weeklyAverage : 0.0);
+
+        return statistics;
     }
 }

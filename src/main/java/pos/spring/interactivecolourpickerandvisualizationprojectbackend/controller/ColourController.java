@@ -16,6 +16,7 @@ import pos.spring.interactivecolourpickerandvisualizationprojectbackend.util.Ima
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/colour")
@@ -37,9 +38,9 @@ public class ColourController {
             @RequestPart("userEntity") String userEntity
     ) {
         try {
-            Cost cost = costCalculate(color_C,color_M,color_Y,color_K);
+            Cost cost = costCalculate(color_C, color_M, color_Y, color_K, resolution);
 
-            colourService.save(assignValue(id,image,color_C,color_M,color_Y,color_K,cost,resolution,userEntity));
+            colourService.save(assignValue(id, image, color_C, color_M, color_Y, color_K, cost, resolution, userEntity));
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (DataPersistException e) {
@@ -107,8 +108,7 @@ public class ColourController {
         return colourDto;
     }
 
-    private Cost costCalculate(String colorC, String colorM, String colorY, String colorK) {
-
+    private Cost costCalculate(String colorC, String colorM, String colorY, String colorK, String resolution) {
         float C_cost_per_unit = 0.5f;
         float M_cost_per_unit = 0.4f;
         float Y_cost_per_unit = 0.3f;
@@ -118,10 +118,50 @@ public class ColourController {
         float M_cost = Float.parseFloat(colorM) * M_cost_per_unit;
         float Y_cost = Float.parseFloat(colorY) * Y_cost_per_unit;
         float K_cost = Float.parseFloat(colorK) * K_cost_per_unit;
-        float fullCost = C_cost + M_cost + Y_cost + K_cost;
+        float baseCost = C_cost + M_cost + Y_cost + K_cost;
 
-        return new Cost(C_cost, M_cost, Y_cost, K_cost, fullCost);
 
+        float resolutionMultiplier = calculateResolutionMultiplier(resolution);
+        float finalCost = baseCost * resolutionMultiplier;
+
+        return new Cost(C_cost, M_cost, Y_cost, K_cost, finalCost);
+    }
+
+    private float calculateResolutionMultiplier(String resolution) {
+        try {
+
+            String[] dimensions = resolution.toLowerCase().split("x");
+            int width = Integer.parseInt(dimensions[0]);
+            int height = Integer.parseInt(dimensions[1]);
+
+
+            int totalPixels = width * height;
+
+
+            if (totalPixels <= 921600) { // <= 720p (1280x720)
+                return 1.0f; // No additional cost
+            } else if (totalPixels <= 2073600) { // <= 1080p (1920x1080)
+                return 1.2f; // 20% increment for 1080p
+            } else if (totalPixels <= 8294400) { // <= 4K (3840x2160)
+                return 1.5f; // 50% increment for 4K
+            } else {
+                return 2.0f; // 100% increment for higher than 4K
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1.0f;
+        }
+    }
+
+    @GetMapping("/genColourID")
+    public String generateColourId(){
+        return colourService.generateColourID();
+    }
+
+    @GetMapping("/statistics/{userId}")
+    public ResponseEntity<Map<String, Object>> getUserStatistics(@PathVariable String userId) {
+        Map<String, Object> statistics = colourService.getUserStatistics(userId);
+        return ResponseEntity.ok(statistics);
     }
 
 
